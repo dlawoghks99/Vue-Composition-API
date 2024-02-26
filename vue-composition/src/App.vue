@@ -1,26 +1,54 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TodoHeader :appTitle="title"></TodoHeader>
+  <TodoInput @add="addTodoItem"></TodoInput>
+  <TodoList :todoItems="todoItems" @remove="removeTodoItem"></TodoList>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+import TodoHeader from './components/TodoHeader.vue'
+import TodoInput from './components/TodoInput.vue'
+import TodoList from './components/TodoList.vue'
+
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  components: { TodoHeader, TodoInput, TodoList },
+  data(){
+    return{
+      title : '할일 앱'
+    }
+  },
+  setup(){
+    const todoItems = ref([]);
+
+    function fetchTodos(){
+      const result = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const todoItem = localStorage.key(i);
+            // items.value.push(todoItem);
+            result.push(todoItem);
+        }
+        return result;
+    }
+
+    function addTodoItem(todo){
+      todoItems.value.push(todo);
+      localStorage.setItem(todo,todo);
+    }
+
+    function removeTodoItem(item, index){
+      todoItems.value.splice(index, 1);
+      localStorage.removeItem(item, item);
+    }
+
+    todoItems.value = fetchTodos();
+
+    return { todoItems, addTodoItem, removeTodoItem };
+
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss" scoped>
+
 </style>
